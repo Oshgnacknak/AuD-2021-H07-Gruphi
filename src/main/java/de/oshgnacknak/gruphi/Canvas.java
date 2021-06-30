@@ -42,6 +42,20 @@ public class Canvas extends JPanel {
             public void line(double x1, double y1, double x2, double y2) {
                 g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
             }
+
+            @Override
+            public void rotated(double theta, double x, double y, Runnable r) {
+                g.rotate(theta, x, y);
+                r.run();
+                g.rotate(-theta, x, y);
+            }
+
+            @Override
+            public void triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
+                int[] xs = {(int) x1, (int) x2, (int) x3};
+                int[] ys = {(int) y1, (int) y2, (int) y3};
+                g.fillPolygon(xs, ys, 3);
+            }
         });
     }
 }

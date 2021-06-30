@@ -1,6 +1,7 @@
 package de.oshgnacknak.gruphi;
 
 import h07.graph.DirectedGraph;
+import h07.graph.EmptyGraphFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +9,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.util.Optional;
 
 class Gruphi extends JFrame {
@@ -20,17 +20,16 @@ class Gruphi extends JFrame {
     DirectedGraph<Node, Double> graph = newGraph();
 
     MazeGenerator<Node> mazeGenerator = new MazeGenerator<>(graph, (a, b) ->
-        a.pos.distance(b.pos) <= NEIGHBOUR_DISTANCE);
+        a.pos.dist(b.pos) <= NEIGHBOUR_DISTANCE);
 
     Node selected = null;
-    Point2D.Double vel = new Point2D.Double(0, 0);
+    Vector vel = new Vector(0, 0);
     private boolean running = true;
 
     Gruphi() {
         super("Gruphi - The Graph GUI - By Osh");
 
-        var canvas = new Canvas(this::draw);
-        add(canvas);
+        add(new Canvas(this::draw));
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -58,23 +57,21 @@ class Gruphi extends JFrame {
                             graph.addNode(new Node(e.getX(), e.getY()));
                         }
                     } break;
+
                     case MouseEvent.BUTTON3: {
                         if (selected != null) {
                             selected.color = Node.COLOR;
                             selected.radius = Node.RADIUS;
                             selected = null;
-                        } else {
-                            findClickedNode(e)
-                                .ifPresent(n -> {
-                                    selected = n;
-                                    selected.radius *= 2;
-                                    selected.color = Color.WHITE;
-                                });
-                            if (selected != null) {
-                                selected.color = Color.RED;
-                            }
                         }
+                        findClickedNode(e)
+                            .ifPresent(n -> {
+                                selected = n;
+                                selected.radius *= 1.3;
+                                selected.color = Color.RED;
+                            });
                     } break;
+
                     default: break;
                 }
             }
@@ -205,11 +202,25 @@ class Gruphi extends JFrame {
         d.fill(Color.BLACK);
         d.rect(0, 0, getWidth(), getHeight());
 
-        d.strokeWeight(2);
+        d.strokeWeight(1);
         d.fill(Color.WHITE);
         for (var node : graph.getAllNodes()) {
             for (var child : graph.getChildrenForNode(node)) {
                 d.line(node.pos.x, node.pos.y, child.pos.x, child.pos.y);
+
+                var v = child.pos
+                    .copy()
+                    .sub(node.pos);
+                var r = 4;
+                var p = v.copy()
+                    .setMag(v.mag() - child.radius - r)
+                    .add(node.pos);
+
+                d.rotated(v.angle(), p.x, p.y, () ->
+                    d.triangle(
+                        p.x+r, p.y,
+                        p.x-r, p.y-r,
+                        p.x-r, p.y+r));
             }
         }
 
@@ -238,13 +249,12 @@ class Gruphi extends JFrame {
 
     void update() {
         if (selected != null) {
-            selected.pos.x += vel.x;
-            selected.pos.y += vel.y;
+            selected.pos.add(vel);
         }
     }
 
     DirectedGraph<Node, Double> newGraph() {
-        throw new UnsupportedOperationException("Return a h07.graph.DirectedGraphImpl here");
+        return new EmptyGraphFactory<Node, Double>().createDirectedGraph();
     }
 
     public static void main(String[] args) {
