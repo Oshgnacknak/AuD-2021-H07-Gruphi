@@ -1,7 +1,7 @@
 package de.oshgnacknak.gruphi;
 
 import h07.graph.DirectedGraph;
-import h07.graph.EmptyGraphFactory;
+import h07.graph.DirectedGraphFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,17 +17,20 @@ class Gruphi extends JFrame {
     private static final double VEL = 5;
     private static final double NEIGHBOUR_DISTANCE = 50;
 
-    DirectedGraph<Node, Double> graph = newGraph();
+    private final DirectedGraph<Node, Double> graph;
 
-    MazeGenerator<Node> mazeGenerator = new MazeGenerator<>(graph, (a, b) ->
-        a.pos.dist(b.pos) <= NEIGHBOUR_DISTANCE);
+    private final MazeGenerator<Node> mazeGenerator;
 
-    Node selected = null;
-    Vector vel = new Vector(0, 0);
+    private Node selected = null;
+    private final Vector vel = new Vector(0, 0);
     private boolean running = true;
 
-    Gruphi() {
+    Gruphi(DirectedGraphFactory<Node, Double> factory) {
         super("Gruphi - The Graph GUI - By Osh");
+
+        this.graph = factory.createDirectedGraph();
+        this. mazeGenerator = new MazeGenerator<>(graph, (a, b) ->
+            a.pos.dist(b.pos) <= NEIGHBOUR_DISTANCE);
 
         add(new Canvas(this::draw));
         pack();
@@ -198,7 +201,7 @@ class Gruphi extends JFrame {
             .findFirst();
     }
 
-    void draw(Drawable d) {
+    private void draw(Drawable d) {
         d.fill(Color.BLACK);
         d.rect(0, 0, getWidth(), getHeight());
 
@@ -247,20 +250,17 @@ class Gruphi extends JFrame {
         }
     }
 
-    void update() {
+    private void update() {
         if (selected != null) {
             selected.pos.add(vel);
         }
     }
 
-    DirectedGraph<Node, Double> newGraph() {
-        return new EmptyGraphFactory<Node, Double>().createDirectedGraph();
-    }
-
     public static void main(String[] args) {
-        var gruphi = new Gruphi();
-        gruphi.setVisible(true);
-        gruphi.updateLoop();
-        System.exit(0);
+        // TODO:
+        // var gruphi = new Gruphi(new SomeFactory<>());
+        // gruphi.setVisible(true);
+        // gruphi.updateLoop();
+        // System.exit(0);
     }
 }
