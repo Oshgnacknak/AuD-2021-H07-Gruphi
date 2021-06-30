@@ -43,7 +43,7 @@ Beenden
 Knoten bewegen
 
 - Linke Maustaste:
-Verbingen erstellen bzw. löschen,
+Verbingung erstellen bzw. löschen,
 wenn anderer Knoten geklickt.
 Sonst Knoten teleportieren
 
@@ -52,5 +52,4 @@ Knoten unauswählen,
 bwz. neuen Knoten auswählen
   
 - `M`:
-Labyrinth mit Knoten
-erstellen als Startknoten generieren
+Labyrinth mit Knoten als Startknoten generieren
