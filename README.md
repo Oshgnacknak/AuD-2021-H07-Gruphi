@@ -6,16 +6,12 @@ Um diese GUI nutzen zu müssen,
 muss man die H1,
 sprich die Klasse `h07.graph.DirectedGraphImpl`,
 implementiert haben
-und eine Entsprechende Fabrik in der `Gruphi.main()` angeben.
-Die Einfachste Fabrik sieht in etwa so aus:
+und eine entsprechende Fabrik in der `Gruphi.main()` angeben.
+Die einfachste Fabrik sieht in etwa so aus:
 
 ```java
-public class EmptyGraphFactory<V, A> implements DirectedGraphFactory<V, A> {
-
-    @Override
-    public DirectedGraph<V, A> createDirectedGraph() {
-        return new DirectedGraphImpl<>();
-    }
+public static <V, A> DirectedGraphFactory<V, A> defaultFactory() {
+    return DirectedGraphImpl::new;
 }
 ```
 
