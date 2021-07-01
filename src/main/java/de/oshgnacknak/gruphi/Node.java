@@ -15,13 +15,13 @@ class Node {
 
     Color color;
 
-    Node(double x, double y) {
-       this.pos = new Vector(x, y);
+    Node(Vector pos) {
+       this.pos = pos;
        this.radius = RADIUS;
        this.color = COLOR;
     }
 
-    boolean inside(double x, double y) {
-        return pos.dist(x, y) <= radius;
+    boolean inside(Vector v) {
+        return pos.dist(v) <= radius;
     }
 }

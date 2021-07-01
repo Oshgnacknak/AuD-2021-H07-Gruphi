@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 
@@ -17,8 +16,12 @@ class GruphiFrame extends JFrame {
     private final MazeGenerator<Node> mazeGenerator;
     private final Gruphi gruphi;
 
+    private final PanningAndZooming panningAndZooming;
+
+    private final Vector selectedVel = new Vector(0, 0);
+    private final Vector cameraVel = new Vector(0, 0);
+
     private Node selected = null;
-    private final Vector vel = new Vector(0, 0);
     private boolean running = true;
 
     GruphiFrame(Gruphi gruphi) {
@@ -27,84 +30,55 @@ class GruphiFrame extends JFrame {
         this.gruphi = gruphi;
         this.graph = gruphi.getDirectedGraphFactory().createDirectedGraph();
         this.mazeGenerator = new MazeGenerator<>(graph, gruphi.getNeighbourPredicate());
+        this.panningAndZooming = new PanningAndZooming(this);
 
         add(new Canvas(this::draw));
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        var mouseListener = new MouseAdapter() {
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                switch (e.getButton()) {
-                    case MouseEvent.BUTTON1: {
-                        if (selected != null) {
-                            var clicked = findClickedNode(e);
-                            if (clicked.isPresent()) {
-                                var n = clicked.get();
-                                if (graph.getChildrenForNode(selected).contains(n)) {
-                                    graph.disconnectNodes(selected, n);
-                                } else {
-                                    graph.connectNodes(selected, 1.0, n);
-                                }
-                            } else {
-                                selected.pos.x = e.getX();
-                                selected.pos.y = e.getY();
-                            }
-                        } else {
-                            graph.addNode(new Node(e.getX(), e.getY()));
-                        }
-                    } break;
-
-                    case MouseEvent.BUTTON3: {
-                        if (selected != null) {
-                            selected.color = Node.COLOR;
-                            selected.radius = Node.RADIUS;
-                            selected = null;
-                        }
-                        findClickedNode(e)
-                            .ifPresent(n -> {
-                                selected = n;
-                                selected.radius *= 1.3;
-                                selected.color = Color.RED;
-                            });
-                    } break;
-
-                    default: break;
-                }
-            }
-        };
-
-        addMouseListener(mouseListener);
-        addMouseMotionListener(mouseListener);
+        addMouseListener(panningAndZooming);
+        addMouseWheelListener(panningAndZooming);
+        addMouseMotionListener(panningAndZooming);
 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
+                    case KeyEvent.VK_W: {
+                        selectedVel.y = -gruphi.getVelocity();
+                    } break;
+
+                    case KeyEvent.VK_S: {
+                        selectedVel.y = gruphi.getVelocity();
+                    } break;
+
+                    case KeyEvent.VK_A: {
+                        selectedVel.x = -gruphi.getVelocity();
+                    } break;
+
+                    case KeyEvent.VK_D: {
+                        selectedVel.x = gruphi.getVelocity();
+                    } break;
+
                     case KeyEvent.VK_K:
-                    case KeyEvent.VK_W:
                     case KeyEvent.VK_UP: {
-                        vel.y = -gruphi.getVelocity();
+                        cameraVel.y = gruphi.getVelocity();
                     } break;
 
                     case KeyEvent.VK_J:
-                    case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN: {
-                        vel.y = gruphi.getVelocity();
+                        cameraVel.y = -gruphi.getVelocity();
                     } break;
 
                     case KeyEvent.VK_H:
-                    case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT: {
-                        vel.x = -gruphi.getVelocity();
+                        cameraVel.x = gruphi.getVelocity();
                     } break;
 
                     case KeyEvent.VK_L:
-                    case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT: {
-                        vel.x = gruphi.getVelocity();
+                        cameraVel.x = -gruphi.getVelocity();
                     } break;
 
                     case KeyEvent.VK_X:
@@ -142,28 +116,80 @@ class GruphiFrame extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 switch (e.getKeyCode()) {
+                    case KeyEvent.VK_W:
+                    case KeyEvent.VK_S: {
+                        selectedVel.y = 0;
+                    } break;
+
+                    case KeyEvent.VK_A:
+                    case KeyEvent.VK_D: {
+                        selectedVel.x = 0;
+                    } break;
+
                     case KeyEvent.VK_K:
                     case KeyEvent.VK_J:
-                    case KeyEvent.VK_W:
-                    case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
                     case KeyEvent.VK_UP: {
-                        vel.y = 0;
+                        cameraVel.y = 0;
                     } break;
 
                     case KeyEvent.VK_H:
                     case KeyEvent.VK_L:
-                    case KeyEvent.VK_A:
-                    case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
                     case KeyEvent.VK_LEFT: {
-                        vel.x = 0;
+                        cameraVel.x = 0;
+                    } break;
+
+                    case KeyEvent.VK_PLUS: {
+                        panningAndZooming.zoom(1.1);
+                    } break;
+
+                    case KeyEvent.VK_MINUS: {
+                        panningAndZooming.zoom(0.9);
                     } break;
 
                     default: break;
                 }
             }
         });
+    }
+
+    public void onMousePressed(int button, Vector v) {
+        switch (button) {
+            case MouseEvent.BUTTON1: {
+                if (selected != null) {
+                    var clicked = findClickedNode(v);
+                    if (clicked.isPresent() && clicked.get() != selected) {
+                        var n = clicked.get();
+                        if (graph.getChildrenForNode(selected).contains(n)) {
+                            graph.disconnectNodes(selected, n);
+                        } else {
+                            graph.connectNodes(selected, 1.0, n);
+                        }
+                    } else {
+                        selected.pos = v;
+                    }
+                } else {
+                    graph.addNode(new Node(v));
+                }
+            } break;
+
+            case MouseEvent.BUTTON3: {
+                if (selected != null) {
+                    selected.color = Node.COLOR;
+                    selected.radius = Node.RADIUS;
+                    selected = null;
+                }
+                findClickedNode(v)
+                    .ifPresent(n -> {
+                        selected = n;
+                        selected.radius *= 1.3;
+                        selected.color = Color.RED;
+                    });
+            } break;
+
+            default: break;
+        }
     }
 
     private void generateGrid() {
@@ -176,7 +202,10 @@ class GruphiFrame extends JFrame {
 
         for (int x = 0; x < cols; x++) {
             for (int y = 0; y < rows; y++) {
-                var n = new Node((x + 0.5) * dist, (y + 0.5) * dist);
+                var v = new Vector(x, y)
+                    .add(0.5, 0.5)
+                    .mul(dist);
+                var n = new Node(v);
                 graph.addNode(n);
             }
         }
@@ -189,44 +218,54 @@ class GruphiFrame extends JFrame {
         }
     }
 
-    private Optional<Node> findClickedNode(MouseEvent e) {
+    private Optional<Node> findClickedNode(Vector v) {
         return graph.getAllNodes()
             .stream()
-            .filter(n ->
-                n.inside(e.getX(), e.getY()))
+            .filter(n -> n.inside(v))
             .findFirst();
     }
 
-    private void draw(Drawable d) {
+    public void draw(Drawable d) {
         d.fill(Color.BLACK);
         d.rect(0, 0, getWidth(), getHeight());
+        panningAndZooming.draw(d, () ->
+            drawNodes(d));
+    }
 
+    private void drawNodes(Drawable d) {
         d.strokeWeight(1);
         d.fill(Color.WHITE);
-        for (var node : graph.getAllNodes()) {
-            for (var child : graph.getChildrenForNode(node)) {
-                d.line(node.pos.x, node.pos.y, child.pos.x, child.pos.y);
-
-                var v = child.pos
-                    .copy()
-                    .sub(node.pos);
-                var r = 4;
-                var p = v.copy()
-                    .setMag(v.mag() - child.radius - r)
-                    .add(node.pos);
-
-                d.rotated(v.angle(), p.x, p.y, () ->
-                    d.triangle(
-                        p.x+r, p.y,
-                        p.x-r, p.y-r,
-                        p.x-r, p.y+r));
-            }
-        }
+        drawConnections(d);
 
         for (var node : graph.getAllNodes()) {
             d.fill(node.color);
             d.ellipse(node.pos.x, node.pos.y, node.radius * 2, node.radius * 2);
         }
+    }
+
+    private void drawConnections(Drawable d) {
+        for (var node : graph.getAllNodes()) {
+            for (var child : graph.getChildrenForNode(node)) {
+                d.line(node.pos.x, node.pos.y, child.pos.x, child.pos.y);
+                drawConnectionArrowHead(d, node, child);
+            }
+        }
+    }
+
+    private void drawConnectionArrowHead(Drawable d, Node node, Node child) {
+        var v = child.pos
+            .copy()
+            .sub(node.pos);
+        var r = 4;
+        var p = v.copy()
+            .setMag(v.mag() - child.radius)
+            .add(node.pos);
+
+        d.rotated(v.angle(), p.x, p.y, () ->
+            d.triangle(
+                p.x+r, p.y,
+                p.x-r, p.y-r,
+                p.x-r, p.y+r));
     }
 
     public void updateLoop() {
@@ -248,7 +287,8 @@ class GruphiFrame extends JFrame {
 
     private void update() {
         if (selected != null) {
-            selected.pos.add(vel);
+            selected.pos.add(selectedVel);
         }
+        panningAndZooming.pan(cameraVel);
     }
 }
