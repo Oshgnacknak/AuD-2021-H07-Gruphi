@@ -11,12 +11,12 @@ public class MazeGenerator<V> {
     private final Random random;
     private final DirectedGraph<V, Double> graph;
     private final Set<V> visited;
-    private final BiPredicate<V, V> areNeighbours;
+    private final BiPredicate<V, V> neighbourPredicate;
 
-    public MazeGenerator(DirectedGraph<V, Double> graph, BiPredicate<V, V> areNeighbours) {
+    public MazeGenerator(DirectedGraph<V, Double> graph, BiPredicate<V, V> neighbourPredicate) {
         this.random = new Random();
         this.graph = graph;
-        this.areNeighbours = areNeighbours;
+        this.neighbourPredicate = neighbourPredicate;
         this.visited = new HashSet<>();
     }
 
@@ -54,7 +54,7 @@ public class MazeGenerator<V> {
             .stream()
             .filter(n ->
                 n != node
-                && areNeighbours.test(node, n)
+                && neighbourPredicate.test(node, n)
                 && !visited.contains(n))
             .collect(Collectors.toList());
     }
