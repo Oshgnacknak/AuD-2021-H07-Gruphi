@@ -14,8 +14,12 @@ public class Vector {
     }
 
     public Vector add(Vector v) {
-        x += v.x;
-        y += v.y;
+        return add(v.x, v.y);
+    }
+
+    public Vector add(double x, double y) {
+        this.x += x;
+        this.y += y;
         return this;
     }
 
@@ -31,6 +35,12 @@ public class Vector {
         return this;
     }
 
+    public Vector div(double d) {
+        x /= d;
+        y /= d;
+        return this;
+    }
+
     double dot(Vector v) {
         return x*v.x + y*v.y;
     }
@@ -40,7 +50,7 @@ public class Vector {
     }
 
     public Vector norm() {
-        return mul(1 / mag());
+        return div(mag());
     }
 
     Vector setMag(double mag) {
