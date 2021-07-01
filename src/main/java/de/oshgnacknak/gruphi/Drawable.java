@@ -12,9 +12,13 @@ public interface Drawable {
 
     void ellipse(double x, double y, double w, double h);
 
+    void triangle(double x1, double y1, double x2, double y2, double x3, double y3);
+
     void line(double x1, double y1, double x2, double y2);
 
     void rotated(double theta, double x, double y, Runnable r);
 
-    void triangle(double x1, double y1, double x2, double y2, double x3, double y3);
+    void translated(double x, double y, Runnable r);
+
+    void scaled(double scale, Runnable r);
 }

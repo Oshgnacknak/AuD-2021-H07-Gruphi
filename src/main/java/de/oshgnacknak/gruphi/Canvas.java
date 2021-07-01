@@ -30,17 +30,24 @@ public class Canvas extends JPanel {
 
             @Override
             public void rect(double x, double y, double w, double h) {
-                g.fillRect((int) x, (int) y, (int) w, (int) h);
+                g.fillRect(round(x), round(y), round(w), round(h));
             }
 
             @Override
             public void ellipse(double x, double y, double w, double h) {
-                g.fillOval((int) (x - w/2), (int) (y - h/2), (int) w, (int) h);
+                g.fillOval(round(x - w/2), round(y - h/2), round(w), round(h));
+            }
+
+            @Override
+            public void triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
+                int[] xs = {round(x1), round(x2), round(x3)};
+                int[] ys = {round(y1), round(y2), round(y3)};
+                g.fillPolygon(xs, ys, 3);
             }
 
             @Override
             public void line(double x1, double y1, double x2, double y2) {
-                g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+                g.drawLine(round(x1), round(y1), round(x2), round(y2));
             }
 
             @Override
@@ -51,11 +58,22 @@ public class Canvas extends JPanel {
             }
 
             @Override
-            public void triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
-                int[] xs = {(int) x1, (int) x2, (int) x3};
-                int[] ys = {(int) y1, (int) y2, (int) y3};
-                g.fillPolygon(xs, ys, 3);
+            public void translated(double x, double y, Runnable r) {
+                g.translate(x, y);
+                r.run();
+                g.translate(-x, -y);
+            }
+
+            @Override
+            public void scaled(double scale, Runnable r) {
+                g.scale(scale, scale);
+                r.run();
+                g.scale(1/scale, 1/scale);
             }
         });
+    }
+
+    private int round(double d) {
+        return (int) Math.round(d);
     }
 }
