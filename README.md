@@ -18,6 +18,12 @@ public static <V, A> DirectedGraphFactory<V, A> defaultFactory() {
 
 # Streuerung
 
+- Pfeiltasten, Vimkeys, Mittlere Maustaste:
+Kamera bewegen
+
+- Mausrad:
+Zoomen
+
 - `C`:
 Graphen leeren 
 
@@ -35,8 +41,11 @@ Beenden
 
 ## Wenn Knoten ausgewählt (rot)
 
-- WASD, Pfeiltasten, Vimkeys:
+- WASD:
 Knoten bewegen
+
+- `X`, Entfernen, Rücktaste:
+Knoten löschen
 
 - Linke Maustaste:
 Verbingung erstellen bzw. löschen,
