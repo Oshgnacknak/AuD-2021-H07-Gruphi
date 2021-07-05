@@ -2,14 +2,28 @@ package de.oshgnacknak.gruphi;
 
 import h07.graph.DirectedGraph;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Optional;
 
 class GruphiFrame extends JFrame {
+
+    private static final Image NUGGET = loadNugget();
+
+    private static Image loadNugget() {
+        try {
+            return ImageIO.read(Gruphi.class.getResourceAsStream("/nugget.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new BufferedImage(0, 0, BufferedImage.TYPE_INT_RGB);
+    }
 
     private final DirectedGraph<Node, Double> graph;
 
@@ -23,6 +37,7 @@ class GruphiFrame extends JFrame {
 
     private Node selected = null;
     private boolean running = true;
+    private boolean nuggets = false;
 
     GruphiFrame(Gruphi gruphi) {
         super("Gruphi - The Graph GUI - By Osh");
@@ -107,6 +122,10 @@ class GruphiFrame extends JFrame {
 
                     case KeyEvent.VK_G: {
                         generateGrid();
+                    } break;
+
+                    case KeyEvent.VK_N: {
+                        nuggets = !nuggets;
                     } break;
 
                     default: break;
@@ -240,6 +259,11 @@ class GruphiFrame extends JFrame {
         for (var node : graph.getAllNodes()) {
             d.fill(node.color);
             d.ellipse(node.pos.x, node.pos.y, node.radius * 2, node.radius * 2);
+
+            if (nuggets) {
+                var r = node.radius * 0.9;
+                d.image(NUGGET, node.pos.x - r, node.pos.y - r, r*2, r*2);
+            }
         }
     }
 

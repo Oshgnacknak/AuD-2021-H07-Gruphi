@@ -16,6 +16,8 @@ public interface Drawable {
 
     void line(double x1, double y1, double x2, double y2);
 
+    void image(Image image, double x, double y, double w, double h);
+
     void rotated(double theta, double x, double y, Runnable r);
 
     void translated(double x, double y, Runnable r);

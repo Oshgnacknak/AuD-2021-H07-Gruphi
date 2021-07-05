@@ -51,6 +51,11 @@ public class Canvas extends JPanel {
             }
 
             @Override
+            public void image(Image image, double x, double y, double w, double h) {
+                g.drawImage(image, round(x), round(y), round(w), round(h), null);
+            }
+
+            @Override
             public void rotated(double theta, double x, double y, Runnable r) {
                 g.rotate(theta, x, y);
                 r.run();
