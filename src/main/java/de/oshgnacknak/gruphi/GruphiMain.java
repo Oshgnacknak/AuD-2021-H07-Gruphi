@@ -5,6 +5,7 @@ public class GruphiMain {
     public static void main(String[] args) {
         var gruphi = new GruphiBuilder()
             // .setDirectedGraphFactory(someFactory)
+            // .setShortestPathsAlgorithm(somePathFinder)
             .createGruphi();
 
         var frame = new GruphiFrame(gruphi);

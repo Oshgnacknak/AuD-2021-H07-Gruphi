@@ -1,6 +1,7 @@
 package de.oshgnacknak.gruphi;
 
 import h07.graph.DirectedGraph;
+import h07.graph.Path;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 class GruphiFrame extends JFrame {
@@ -18,6 +21,7 @@ class GruphiFrame extends JFrame {
 
     private static Image loadNugget() {
         try {
+            //noinspection ConstantConditions
             return ImageIO.read(Gruphi.class.getResourceAsStream("/nugget.png"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,6 +40,8 @@ class GruphiFrame extends JFrame {
     private final Vector cameraVel = new Vector(0, 0);
 
     private Node selected = null;
+    private Node startNode = null;
+    private Map<Node, Path<Node, Double>> paths = null;
     private boolean running = true;
     private boolean nuggets = false;
 
@@ -100,6 +106,9 @@ class GruphiFrame extends JFrame {
                     case KeyEvent.VK_DELETE:
                     case KeyEvent.VK_BACK_SPACE: {
                         if (selected != null) {
+                            if (selected == startNode) {
+                                clearPaths();
+                            }
                             graph.removeNode(selected);
                             selected = null;
                         }
@@ -126,6 +135,10 @@ class GruphiFrame extends JFrame {
 
                     case KeyEvent.VK_N: {
                         nuggets = !nuggets;
+                    } break;
+
+                    case KeyEvent.VK_P: {
+                        generatePaths();
                     } break;
 
                     default: break;
@@ -173,6 +186,22 @@ class GruphiFrame extends JFrame {
         });
     }
 
+    private void generatePaths() {
+        clearPaths();
+
+        if (selected != null) {
+            startNode = selected;
+            startNode.color = Color.GREEN;
+            selected = null;
+
+            var algo = Objects.requireNonNull(
+                gruphi.getShortestPathsAlgorithm(),
+                "Did you supply a path finding implementation");
+
+            paths = algo.shortestPaths(graph, startNode, new DoubleAddition(), Comparable::compareTo);
+        }
+    }
+
     public void onMousePressed(int button, Vector v) {
         switch (button) {
             case MouseEvent.BUTTON1: {
@@ -204,6 +233,10 @@ class GruphiFrame extends JFrame {
                         selected = n;
                         selected.radius *= 1.3;
                         selected.color = Color.RED;
+
+                        if (selected == startNode) {
+                            clearPaths();
+                        }
                     });
             } break;
 
@@ -232,10 +265,16 @@ class GruphiFrame extends JFrame {
 
     private void clearGraph() {
         selected = null;
+        clearPaths();
         for (var node : graph.getAllNodes()) {
             graph.removeNode(node);
         }
     }
+    private void clearPaths() {
+        startNode = null;
+        paths = null;
+    }
+
 
     private Optional<Node> findClickedNode(Vector v) {
         return graph.getAllNodes()
@@ -254,8 +293,14 @@ class GruphiFrame extends JFrame {
     private void drawNodes(Drawable d) {
         d.strokeWeight(1);
         d.fill(Color.WHITE);
-        drawConnections(d);
 
+        drawConnections(d);
+        drawCells(d);
+
+        drawPath(d);
+    }
+
+    private void drawCells(Drawable d) {
         for (var node : graph.getAllNodes()) {
             d.fill(node.color);
             d.ellipse(node.pos.x, node.pos.y, node.radius * 2, node.radius * 2);
@@ -264,6 +309,24 @@ class GruphiFrame extends JFrame {
                 var r = node.radius * 0.9;
                 d.image(NUGGET, node.pos.x - r, node.pos.y - r, r*2, r*2);
             }
+        }
+    }
+
+    private void drawPath(Drawable d) {
+        if (selected == null || paths == null || !paths.containsKey(selected)) {
+            return;
+        }
+
+        var path = paths.get(selected);
+
+        d.fill(Color.GREEN);
+        d.strokeWeight(2);
+        Node prev = null;
+        for (var node : path) {
+            if (prev != null) {
+                d.line(prev.pos.x, prev.pos.y, node.pos.x, node.pos.y);
+            }
+            prev = node;
         }
     }
 
