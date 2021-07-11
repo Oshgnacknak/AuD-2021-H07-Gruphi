@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
 import java.util.function.BiPredicate;
@@ -32,4 +33,9 @@ public interface Gruphi {
      * @return A {@link DirectedGraphFactory} to create the initial {@link h07.graph.DirectedGraph}
      */
     DirectedGraphFactory<Node, Double> getDirectedGraphFactory();
+
+    /**
+     * @return A {@link ShortestPathsAlgorithm} for the path finding
+     */
+    ShortestPathsAlgorithm<Node, Double> getShortestPathsAlgorithm();
 }

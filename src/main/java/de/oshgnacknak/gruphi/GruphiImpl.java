@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
 import java.util.Objects;
@@ -21,16 +22,19 @@ public class GruphiImpl implements Gruphi {
 
     private final DirectedGraphFactory<Node, Double> directedGraphFactory;
 
+    private final ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm;
+
     public GruphiImpl(Long frameDelay,
                       Double velocity,
                       Double gridSpacing,
                       BiPredicate<Node, Node> neighbourPredicate,
-                      DirectedGraphFactory<Node, Double> directedGraphFactory) {
+                      DirectedGraphFactory<Node, Double> directedGraphFactory, ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm) {
         this.frameDelay = frameDelay == null ? DEFAULT_FRAME_DELAY : frameDelay;
         this.velocity = velocity == null ? DEFAULT_VELOCITY : velocity;
         this.gridSpacing = gridSpacing == null ? DEFAULT_GRID_SPACING : gridSpacing;
         this.neighbourPredicate = neighbourPredicate == null ? this::defaultAreNeighbours : neighbourPredicate;
         this.directedGraphFactory = Objects.requireNonNull(directedGraphFactory, "A directedGraphFactory must be set");
+        this.shortestPathsAlgorithm = shortestPathsAlgorithm;
     }
 
     private boolean defaultAreNeighbours(Node a, Node b) {
@@ -60,5 +64,10 @@ public class GruphiImpl implements Gruphi {
     @Override
     public DirectedGraphFactory<Node, Double> getDirectedGraphFactory() {
         return directedGraphFactory;
+    }
+
+    @Override
+    public ShortestPathsAlgorithm<Node, Double> getShortestPathsAlgorithm() {
+        return shortestPathsAlgorithm;
     }
 }

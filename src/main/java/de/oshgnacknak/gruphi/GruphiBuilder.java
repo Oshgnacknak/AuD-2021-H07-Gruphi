@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
 import java.util.function.BiPredicate;
@@ -10,6 +11,7 @@ public class GruphiBuilder {
     private Double gridSpacing;
     private BiPredicate<Node, Node> neighbourPredicate;
     private DirectedGraphFactory<Node, Double> directedGraphFactory;
+    private ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm;
 
     public GruphiBuilder setFrameDelay(Long frameDelay) {
         this.frameDelay = frameDelay;
@@ -36,7 +38,12 @@ public class GruphiBuilder {
         return this;
     }
 
+    public GruphiBuilder setShortestPathsAlgorithm(ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm) {
+        this.shortestPathsAlgorithm = shortestPathsAlgorithm;
+        return this;
+    }
+
     public GruphiImpl createGruphi() {
-        return new GruphiImpl(frameDelay, velocity, gridSpacing, neighbourPredicate, directedGraphFactory);
+        return new GruphiImpl(frameDelay, velocity, gridSpacing, neighbourPredicate, directedGraphFactory, shortestPathsAlgorithm);
     }
 }
