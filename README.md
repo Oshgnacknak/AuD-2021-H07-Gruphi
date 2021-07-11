@@ -5,9 +5,8 @@
 Um diese GUI nutzen zu müssen,
 muss man die H1,
 sprich die Klasse `h07.graph.DirectedGraphImpl`,
-implementiert haben
-und eine entsprechende Fabrik in der `Gruphi.main()` angeben.
-Die einfachste Fabrik sieht in etwa so aus:
+implementiert haben und eine Factory dafür erstellen.
+Die Einfachste sieht in etwa so aus:
 
 ```java
 public static <V, A> DirectedGraphFactory<V, A> defaultFactory() {
@@ -15,6 +14,12 @@ public static <V, A> DirectedGraphFactory<V, A> defaultFactory() {
 }
 ```
 
+Diese kann man in der Klasse [de.oshgnacknak.gruphi.GruphiMain](src/main/java/de/oshgnacknak/gruphi/GruphiMain.java)
+angeben und die Main-Methode ausführen.
+Weiter kann man dort einige Variablen setzten,
+die in [de.oshgnacknak.gruphi.Gruphi](src/main/java/de/oshgnacknak/gruphi/Gruphi.java) definiert sind.
+Unter anderem kann man hier auch seinen Dijkstra (H5) anmelden.
+Viel Spaß!
 
 # Streuerung
 
@@ -34,7 +39,8 @@ Graphen leeren und raster erzeugen
 Knoten erstellen
 
 - Rechte Maustaste:
-Knoten auswählen
+Knoten auswählen.
+Startknoten (grün) auswählen löscht Pfäde.
   
 - Escape, `Q`:
 Beenden
@@ -58,3 +64,7 @@ bwz. neuen Knoten auswählen
   
 - `M`:
 Labyrinth mit Knoten als Startknoten generieren
+
+- `P`:
+Pfäde mit Knoten als Startknoten generieren (grün).
+Danach andere Knoten auswählen, um Pfäde zu sehen.
