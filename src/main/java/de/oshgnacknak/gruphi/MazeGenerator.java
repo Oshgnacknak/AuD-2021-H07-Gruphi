@@ -40,8 +40,8 @@ public class MazeGenerator<V> {
                 stack.push(current);
                 var neighbour = unvisited.get(random.nextInt(unvisited.size()));
 
-                graph.connectNodes(current, random.nextDouble(), neighbour);
-                graph.connectNodes(neighbour, random.nextDouble(), current);
+                graph.connectNodes(current, 1.0, neighbour);
+                graph.connectNodes(neighbour, 1.0, current);
 
                 visited.add(neighbour);
                 stack.push(neighbour);
