@@ -45,6 +45,12 @@ Startknoten (grün) auswählen löscht Pfäde.
 - Escape, `Q`:
 Beenden
 
+- `U`, `I`:
+Gewichtung für die nächste Kante verkleinern/vergrößern
+
+- `O`:
+Gewichtung für die nächste Kante auf 1 zurücksetzten
+
 ## Wenn Knoten ausgewählt (rot)
 
 - WASD:

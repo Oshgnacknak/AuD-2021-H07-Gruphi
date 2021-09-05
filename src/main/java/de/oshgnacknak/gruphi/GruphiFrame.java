@@ -44,6 +44,7 @@ class GruphiFrame extends JFrame {
     private Map<Node, Path<Node, Double>> paths = null;
     private boolean running = true;
     private boolean nuggets = false;
+    private double weight = 1.0;
 
     GruphiFrame(Gruphi gruphi) {
         super("Gruphi - The Graph GUI - By Osh");
@@ -141,6 +142,18 @@ class GruphiFrame extends JFrame {
                         generatePaths();
                     } break;
 
+                    case KeyEvent.VK_I: {
+                        weight = Math.min(weight*1.01, 10);
+                    } break;
+
+                    case KeyEvent.VK_U: {
+                        weight = Math.max(weight/1.01, 0.1);
+                    } break;
+
+                    case KeyEvent.VK_O: {
+                        weight = 1.0;
+                    } break;
+
                     default: break;
                 }
             }
@@ -212,7 +225,7 @@ class GruphiFrame extends JFrame {
                         if (graph.getChildrenForNode(selected).contains(n)) {
                             graph.disconnectNodes(selected, n);
                         } else {
-                            graph.connectNodes(selected, 1.0, n);
+                            graph.connectNodes(selected, weight, n);
                         }
                     } else {
                         selected.pos = v;
@@ -288,9 +301,12 @@ class GruphiFrame extends JFrame {
 
     public void draw(Drawable d) {
         d.fill(Color.BLACK);
+
         d.rect(0, 0, getWidth(), getHeight());
         panningAndZooming.draw(d, () ->
             drawNodes(d));
+
+        d.text(10, 10, String.format("Weight: %.2f", weight));
     }
 
     private void drawNodes(Drawable d) {
@@ -323,7 +339,6 @@ class GruphiFrame extends JFrame {
         var path = paths.get(selected);
 
         d.fill(Color.GREEN);
-        d.strokeWeight(2);
         Node prev = null;
         for (var node : path) {
             if (prev != null) {
@@ -336,6 +351,7 @@ class GruphiFrame extends JFrame {
     private void drawConnections(Drawable d) {
         for (var node : graph.getAllNodes()) {
             for (var child : graph.getChildrenForNode(node)) {
+                d.strokeWeight(2 * graph.getArcWeightBetween(node, child));
                 d.line(node.pos.x, node.pos.y, child.pos.x, child.pos.y);
                 drawConnectionArrowHead(d, node, child);
             }
@@ -346,7 +362,7 @@ class GruphiFrame extends JFrame {
         var v = child.pos
             .copy()
             .sub(node.pos);
-        var r = 4;
+        var r = 4 * graph.getArcWeightBetween(node, child);
         var p = v.copy()
             .setMag(v.mag() - child.radius)
             .add(node.pos);
