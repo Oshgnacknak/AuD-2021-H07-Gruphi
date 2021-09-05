@@ -31,6 +31,8 @@ class GruphiFrame extends JFrame {
 
     private final DirectedGraph<Node, Double> graph;
 
+    private DirectedGraph<Node, Double> forest;
+
     private final MazeGenerator<Node> mazeGenerator;
     private final Gruphi gruphi;
 
@@ -112,6 +114,7 @@ class GruphiFrame extends JFrame {
                             }
                             graph.removeNode(selected);
                             selected = null;
+                            forest = null;
                         }
                     } break;
 
@@ -152,6 +155,10 @@ class GruphiFrame extends JFrame {
 
                     case KeyEvent.VK_O: {
                         weight = 1.0;
+                    } break;
+
+                    case KeyEvent.VK_F: {
+                        generateForest();
                     } break;
 
                     default: break;
@@ -197,6 +204,19 @@ class GruphiFrame extends JFrame {
                 }
             }
         });
+    }
+
+    private void generateForest() {
+        if (forest != null) {
+            forest = null;
+            return;
+        }
+
+        var algo = Objects.requireNonNull(
+            gruphi.getMinimumSpanningForestAlgorithm(),
+            "Did you supply a spanning forest implementation");
+
+        forest = algo.minimumSpanningForest(graph, Comparable::compareTo, gruphi.getDirectedGraphFactory());
     }
 
     private void generatePaths() {
@@ -278,6 +298,7 @@ class GruphiFrame extends JFrame {
 
     private void clearGraph() {
         selected = null;
+        forest = null;
         clearPaths();
         for (var node : graph.getAllNodes()) {
             graph.removeNode(node);
@@ -317,6 +338,21 @@ class GruphiFrame extends JFrame {
         drawCells(d);
 
         drawPath(d);
+        drawForest(d);
+    }
+
+    private void drawForest(Drawable d) {
+        if (forest == null) {
+            return;
+        }
+
+        d.strokeWeight(2);
+        d.fill(Color.BLUE);
+        for (var node : forest.getAllNodes()) {
+            for (var child : forest.getChildrenForNode(node)) {
+                d.line(node.pos.x, node.pos.y, child.pos.x, child.pos.y);
+            }
+        }
     }
 
     private void drawCells(Drawable d) {

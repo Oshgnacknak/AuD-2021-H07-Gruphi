@@ -51,6 +51,9 @@ Gewichtung für die nächste Kante verkleinern/vergrößern
 - `O`:
 Gewichtung für die nächste Kante auf 1 zurücksetzten
 
+- `F`:
+Berechne oder verstecke den minimalen Spannbaum (blau) 
+
 ## Wenn Knoten ausgewählt (rot)
 
 - WASD:
