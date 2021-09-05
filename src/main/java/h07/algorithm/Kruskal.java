@@ -1,10 +1,12 @@
 package h07.algorithm;
 
-import aud.exam.prep.Pair;
 import h07.graph.DirectedGraph;
 import h07.graph.DirectedGraphFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Kruskal<V, A> implements MinimumSpanningForestAlgorithm<V, A> {
 
