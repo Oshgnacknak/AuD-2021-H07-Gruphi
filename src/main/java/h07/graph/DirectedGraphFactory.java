@@ -13,4 +13,8 @@ public interface DirectedGraphFactory<V, A> {
    * @return der {@code DirectedGraph}, der von dieses Fabrik erzeugt wird.
    */
   DirectedGraph<V, A> createDirectedGraph();
+
+  static <V, A> DirectedGraphFactory<V, A> defaultFactory() {
+    return DirectedGraphImpl::new;
+  }
 }
