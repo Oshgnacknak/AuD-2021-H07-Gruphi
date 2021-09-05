@@ -23,4 +23,8 @@ public interface Drawable {
     void translated(double x, double y, Runnable r);
 
     void scaled(double scale, Runnable r);
+
+    void text(double x, double y, String text);
+
+    void textSize(int size);
 }

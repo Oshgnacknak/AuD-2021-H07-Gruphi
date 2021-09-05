@@ -75,6 +75,19 @@ public class Canvas extends JPanel {
                 r.run();
                 g.scale(1/scale, 1/scale);
             }
+
+            @Override
+            public void text(double x, double y, String text) {
+                FontMetrics metrics = g.getFontMetrics(g.getFont());
+                int d = metrics.getAscent();
+                g.drawString(text, round(x), round(y) + d);
+            }
+
+            @Override
+            public void textSize(int size) {
+                var f = g.getFont();
+                g.setFont(new Font(f.getName(), Font.PLAIN, size));
+            }
         });
     }
 
