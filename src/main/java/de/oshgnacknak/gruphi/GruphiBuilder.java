@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.MinimumSpanningForestAlgorithm;
 import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
@@ -12,6 +13,7 @@ public class GruphiBuilder {
     private BiPredicate<Node, Node> neighbourPredicate;
     private DirectedGraphFactory<Node, Double> directedGraphFactory;
     private ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm;
+    private MinimumSpanningForestAlgorithm<Node, Double> minimumSpanningForestAlgorithm;
 
     public GruphiBuilder setFrameDelay(Long frameDelay) {
         this.frameDelay = frameDelay;
@@ -43,7 +45,12 @@ public class GruphiBuilder {
         return this;
     }
 
+    public GruphiBuilder setMinimumSpanningForestAlgorithm(MinimumSpanningForestAlgorithm<Node, Double> minimumSpanningForestAlgorithm) {
+        this.minimumSpanningForestAlgorithm = minimumSpanningForestAlgorithm;
+        return this;
+    }
+
     public GruphiImpl createGruphi() {
-        return new GruphiImpl(frameDelay, velocity, gridSpacing, neighbourPredicate, directedGraphFactory, shortestPathsAlgorithm);
+        return new GruphiImpl(frameDelay, velocity, gridSpacing, neighbourPredicate, directedGraphFactory, shortestPathsAlgorithm, minimumSpanningForestAlgorithm);
     }
 }

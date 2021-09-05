@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.MinimumSpanningForestAlgorithm;
 import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
@@ -24,17 +25,20 @@ public class GruphiImpl implements Gruphi {
 
     private final ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm;
 
+    private final MinimumSpanningForestAlgorithm<Node, Double> minimumSpanningForestAlgorithm;
+
     public GruphiImpl(Long frameDelay,
                       Double velocity,
                       Double gridSpacing,
                       BiPredicate<Node, Node> neighbourPredicate,
-                      DirectedGraphFactory<Node, Double> directedGraphFactory, ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm) {
+                      DirectedGraphFactory<Node, Double> directedGraphFactory, ShortestPathsAlgorithm<Node, Double> shortestPathsAlgorithm, MinimumSpanningForestAlgorithm<Node, Double> minimumSpanningForestAlgorithm) {
         this.frameDelay = frameDelay == null ? DEFAULT_FRAME_DELAY : frameDelay;
         this.velocity = velocity == null ? DEFAULT_VELOCITY : velocity;
         this.gridSpacing = gridSpacing == null ? DEFAULT_GRID_SPACING : gridSpacing;
         this.neighbourPredicate = neighbourPredicate == null ? this::defaultAreNeighbours : neighbourPredicate;
         this.directedGraphFactory = Objects.requireNonNull(directedGraphFactory, "A directedGraphFactory must be set");
         this.shortestPathsAlgorithm = shortestPathsAlgorithm;
+        this.minimumSpanningForestAlgorithm = minimumSpanningForestAlgorithm;
     }
 
     private boolean defaultAreNeighbours(Node a, Node b) {
@@ -69,5 +73,10 @@ public class GruphiImpl implements Gruphi {
     @Override
     public ShortestPathsAlgorithm<Node, Double> getShortestPathsAlgorithm() {
         return shortestPathsAlgorithm;
+    }
+
+    @Override
+    public MinimumSpanningForestAlgorithm<Node, Double> getMinimumSpanningForestAlgorithm() {
+        return minimumSpanningForestAlgorithm;
     }
 }

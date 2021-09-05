@@ -1,5 +1,6 @@
 package de.oshgnacknak.gruphi;
 
+import h07.algorithm.MinimumSpanningForestAlgorithm;
 import h07.algorithm.ShortestPathsAlgorithm;
 import h07.graph.DirectedGraphFactory;
 
@@ -38,4 +39,9 @@ public interface Gruphi {
      * @return A {@link ShortestPathsAlgorithm} for the path finding
      */
     ShortestPathsAlgorithm<Node, Double> getShortestPathsAlgorithm();
+
+    /**
+     * @return A {@link MinimumSpanningForestAlgorithm} for the spanning tree calculation
+     */
+    MinimumSpanningForestAlgorithm<Node, Double> getMinimumSpanningForestAlgorithm();
 }
