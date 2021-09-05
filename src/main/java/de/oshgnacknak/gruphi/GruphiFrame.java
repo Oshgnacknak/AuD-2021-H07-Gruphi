@@ -271,7 +271,10 @@ class GruphiFrame extends JFrame {
         }
     }
     private void clearPaths() {
-        startNode = null;
+        if (startNode != null) {
+            startNode.color = Node.COLOR;
+            startNode = null;
+        }
         paths = null;
     }
 
